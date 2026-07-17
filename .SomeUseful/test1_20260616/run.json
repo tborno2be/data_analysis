@@ -1,0 +1,27 @@
+{
+  "test_name": "test1_20260616",
+  "batch": "batch1",
+  "queue": [
+    {
+      "well": "A1",
+      "params": {
+        "e_begin_v": 0,
+        "e_vertex1_v": -0.3,
+        "e_vertex2_v": 0.3,
+        "scan_rate_mv_s": 100,
+        "n_scans": 2,
+        "t_equilibrium_s": 5,
+        "e_step_mv": 5
+      }
+    }
+  ],
+  "options": {
+    "initial_phase": true,
+    "pre_rinse": true,
+    "check_connection": false,
+    "check_clean": false,
+    "check_polish": false,
+    "demo": false,
+    "replay_raw": ""
+  }
+}

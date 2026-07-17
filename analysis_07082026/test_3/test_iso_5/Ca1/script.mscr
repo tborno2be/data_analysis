@@ -1,0 +1,22 @@
+e
+var p
+var c
+var t
+set_pgstat_mode 2
+set_max_bandwidth 60
+set_range_minmax da 400m 400m
+set_range ba 590u
+set_autoranging ba 590n 590u
+set_e 400m
+cell_on
+timer_start
+meas_loop_ca p c 400m 50m 60
+    timer_get t
+pck_start
+    pck_add t
+    pck_add c
+pck_end
+endloop
+on_finished:
+cell_off
+

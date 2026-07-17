@@ -1,0 +1,9 @@
+role,t_start,cv,ca,bg_cv,bg_ca
+baseline,2026-07-07T15:38:58,Cv1,Ca1,Cv1,Ca1
+sample,2026-07-07T15:48:28,Cv2,Ca2,Cv1,Ca1
+blank,2026-07-07T15:58:01,Cv3,Ca3,Cv1,Ca1
+sample,2026-07-07T16:07:21,Cv4,Ca4,Cv3,Ca3
+blank,2026-07-07T16:17:22,Cv5,Ca5,Cv1,Ca1
+sample,2026-07-07T16:26:51,Cv6,Ca6,Cv5,Ca5
+blank,2026-07-07T16:36:51,Cv7,Ca7,Cv1,Ca1
+sample,2026-07-07T16:45:52,Cv8,Ca8,Cv7,Ca7
