@@ -1,0 +1,251 @@
+/* =====================================================================
+   redstrings.css  —  ARFB GUI theme  (place in:  GUI/style/redstrings.css)
+
+   A "Tokyo pixel / Red Strings Club" theme: warm noir base, multi-hue
+   neon accents, two pixel typefaces, scanline overlay. Colours ENCODE
+   meaning (sample / cleancheck / running / pending / fault / peak), they
+   are not decorative — keep the mapping consistent across every screen.
+
+   Scope: this file is the GUI layer only. CV/ and workflow/ are backend
+   and never import it.
+
+   Load order in the app:
+     1. <link rel="stylesheet" href="style/redstrings.css">
+     2. pixel fonts are @imported below (needs network; self-host for prod)
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+/* ---------------------------------------------------------------------
+   1. TOKENS
+   --------------------------------------------------------------------- */
+:root {
+  /* surfaces (warm dark) */
+  --rs-bg:          #1a0f12;   /* app base                       */
+  --rs-bg-bar:      #241310;   /* header / footer bars           */
+  --rs-bg-subbar:   #1f1310;   /* legend / toolbar strips        */
+  --rs-panel:       #2a1812;   /* cards, nodes, chips            */
+  --rs-panel-ink:   #140a0a;   /* inset panels, terminal boxes   */
+  --rs-plot-bg:     #0e0606;   /* plot canvas                    */
+
+  /* lines */
+  --rs-border:      #5a3a2a;   /* default 2px border             */
+  --rs-frame:       #3a221c;   /* 3px outer app frame            */
+  --rs-border-cool: #4a3a52;   /* pending / empty (cool)         */
+
+  /* text */
+  --rs-text:        #f0d8b8;
+  --rs-text-dim:    #caa57e;
+  --rs-text-mute:   #9c7350;
+  --rs-text-faint:  #7e6a58;
+
+  /* SEMANTIC ENCODING — do not reassign casually */
+  --rs-sample:      #ffcf7a;   /* sample wells / gold            */
+  --rs-sample-ink:  #ffe0a8;
+  --rs-cleancheck:  #4ecdc4;   /* standard / cleancheck (teal)   */
+  --rs-cleancheck-ink:#a7e9e3;
+  --rs-running:     #5de0ff;   /* active / currently measuring   */
+  --rs-running-ink: #aef0ff;
+  --rs-pending:     #9b7bc7;   /* not yet measured (violet)      */
+  --rs-fault:       #ff3b3b;   /* error / stopped node           */
+  --rs-fault-ink:   #ff8b8b;
+  --rs-done:        #7ed957;   /* completed check / rinse dot    */
+  --rs-peak:        #b6e36b;   /* peak markers, 2-point Δ (lime) */
+  --rs-string:      #e63946;   /* the "red string" run-order line*/
+  --rs-logo:        #ff5d8f;   /* RED STRINGS wordmark (neon pink)*/
+
+  /* dim factor for non-highlighted overlay traces */
+  --rs-dim:         0.20;
+
+  /* geometry */
+  --rs-r:           4px;        /* node / chip radius            */
+  --rs-r-lg:        6px;        /* app frame radius              */
+  --rs-bw:          2px;        /* component border              */
+  --rs-fw:          3px;        /* app frame border              */
+
+  /* type */
+  --rs-px:   'Press Start 2P', monospace;          /* display: 9–13px ONLY */
+  --rs-body: 'VT323', ui-monospace, monospace;     /* body: 14–22px        */
+}
+
+/* ---------------------------------------------------------------------
+   2. APP FRAME + ATMOSPHERE
+   --------------------------------------------------------------------- */
+.rs-app {
+  position: relative;
+  font-family: var(--rs-body);
+  color: var(--rs-text);
+  background: var(--rs-bg);
+  border: var(--rs-fw) solid var(--rs-frame);
+  border-radius: var(--rs-r-lg);
+  overflow: hidden;
+}
+/* fault variant of the frame (stopped screen) */
+.rs-app--fault { border-color: #5a1f24; }
+
+/* scanline overlay — drop as last child of .rs-app */
+.rs-scanline {
+  position: absolute; inset: 0; pointer-events: none; z-index: 60;
+  background: repeating-linear-gradient(0deg,
+              rgba(0,0,0,.24) 0 1px, transparent 1px 3px);
+}
+
+.rs-px   { font-family: var(--rs-px); letter-spacing: .5px; }
+.rs-logo { font-family: var(--rs-px); font-size: 11px; color: var(--rs-logo);
+           text-shadow: 0 0 7px rgba(255,93,143,.6); }
+
+/* header / footer bar */
+.rs-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; min-height: 42px;
+  background: var(--rs-bg-bar);
+  border-bottom: var(--rs-bw) solid var(--rs-frame);
+}
+.rs-bar--footer { border-bottom: 0; border-top: var(--rs-bw) solid var(--rs-frame); }
+.rs-subbar {
+  padding: 6px 14px; background: var(--rs-bg-subbar);
+  border-bottom: var(--rs-bw) solid var(--rs-frame);
+  font-size: 14px; color: var(--rs-text-dim);
+}
+
+/* ---------------------------------------------------------------------
+   3. PANELS / CARDS / TERMINAL BOXES
+   --------------------------------------------------------------------- */
+.rs-panel {
+  background: var(--rs-panel);
+  border: var(--rs-bw) solid var(--rs-border);
+  border-radius: var(--rs-r);
+}
+.rs-panel--ink { background: var(--rs-panel-ink); }
+
+/* optional Minecraft-style bevel (light TL / dark BR) for blockier screens */
+.rs-bevel {
+  border-top: var(--rs-fw) solid #1c5a82;
+  border-left: var(--rs-fw) solid #1c5a82;
+  border-bottom: var(--rs-fw) solid #04141f;
+  border-right: var(--rs-fw) solid #04141f;
+}
+
+/* ---------------------------------------------------------------------
+   4. RUN-MAP PRIMITIVES
+   --------------------------------------------------------------------- */
+.rs-node {
+  box-sizing: border-box; padding: 7px 8px;
+  background: var(--rs-panel);
+  border: var(--rs-bw) solid var(--rs-border);
+  border-radius: var(--rs-r);
+}
+.rs-node--sample     { border-color: var(--rs-sample); }
+.rs-node--cleancheck { border-color: var(--rs-cleancheck); background: #16242a; }
+.rs-node--running    { border-color: var(--rs-running); background: #0e2a33;
+                       box-shadow: 0 0 14px rgba(93,224,255,.5); }
+.rs-node--pending    { border-color: var(--rs-border-cool); background: #1c1622; }
+.rs-node--fault      { background: #2a1010; }
+
+/* the red-string connector is an <svg><path> using this stroke */
+.rs-string-stroke { stroke: var(--rs-string); }
+
+/* run-order knot dot (sits on the string at each node centre) */
+.rs-knot { position: absolute; width: 9px; height: 9px; border-radius: 50%;
+           transform: translate(-4px,-4px); z-index: 9; }
+
+/* rinse marker — small green dot. ONLY the first standard rinse and the
+   rinse right before each formal sample measurement get one. */
+.rs-rinse {
+  position: absolute; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--rs-done); box-shadow: 0 0 7px var(--rs-done);
+  transform: translate(-5px,-5px); z-index: 9;
+}
+
+/* ---------------------------------------------------------------------
+   5. CONTROLS
+   --------------------------------------------------------------------- */
+.rs-btn {
+  font-family: var(--rs-body); font-size: 15px;
+  background: transparent; color: var(--rs-text-dim);
+  border: var(--rs-bw) solid var(--rs-border);
+  border-radius: 3px; padding: 4px 12px; cursor: pointer;
+}
+.rs-btn--primary { color: var(--rs-running); border-color: #2f7d8a; background: #0e2a33; }
+.rs-btn--primary.rs-px { font-size: 11px; }
+.rs-btn--warn    { color: var(--rs-sample); border-color: #6b5224; }
+.rs-btn--danger  { color: var(--rs-string); border-color: #6b2a2f; }
+.rs-btn--ghost   { color: var(--rs-pending); border-style: dashed; border-color: var(--rs-pending);
+                   background: #1c1622; }
+
+.rs-tab {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 4px 11px; background: var(--rs-bg-bar);
+  border: var(--rs-bw) solid var(--rs-border); border-radius: 4px 4px 0 0;
+}
+.rs-tab--active { border-color: var(--rs-running); background: #10222a;
+                  border-bottom-color: #10222a; }
+
+.rs-chip { background: var(--rs-panel); border: var(--rs-bw) solid var(--rs-border);
+           border-radius: 3px; padding: 4px 6px; text-align: center; }
+
+.rs-input {
+  font-family: var(--rs-body); font-size: 16px; color: var(--rs-sample-ink);
+  background: var(--rs-panel-ink); border: var(--rs-bw) solid var(--rs-border);
+  border-radius: 3px; padding: 1px 8px;
+}
+.rs-input:focus { outline: none; border-color: var(--rs-running);
+                  box-shadow: 0 0 12px rgba(93,224,255,.35); }
+
+/* tiny scan / option checkbox: colour the box with the trace colour */
+.rs-check { width: 13px; height: 13px; border-radius: 2px;
+            display: inline-flex; align-items: center; justify-content: center; }
+.rs-check--off { background: transparent; border: 1px solid var(--rs-border); }
+
+/* ---------------------------------------------------------------------
+   6. ANIMATIONS  (respect reduced motion below)
+   --------------------------------------------------------------------- */
+@keyframes rs-blink  { 0%,100%{opacity:1} 50%{opacity:.35} }           /* live pulse  */
+@keyframes rs-glow   { 0%,100%{box-shadow:0 0 12px rgba(93,224,255,.5)}
+                       50%{box-shadow:0 0 18px rgba(93,224,255,.85)} }  /* active card */
+@keyframes rs-pop    { 0%{opacity:0;transform:scale(.4)}
+                       12%{opacity:1;transform:scale(1.04)} 18%{transform:scale(1)}
+                       100%{opacity:1;transform:scale(1)} }            /* map open    */
+@keyframes rs-caret  { 0%,49%{opacity:1} 50%,100%{opacity:0} }          /* name input  */
+/* Rain-World "bubble" — soft organic breathing for the fault node glow */
+@keyframes rs-bubble { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.4}
+                       50%{transform:translate(-50%,-50%) scale(1.3);opacity:.8} }
+@keyframes rs-faultborder { 0%,100%{border-color:#ff5a5a;box-shadow:0 0 14px rgba(255,70,70,.8)}
+                            50%{border-color:#7a2a2a;box-shadow:0 0 4px rgba(255,70,70,.3)} }
+
+.rs-anim-live   { animation: rs-blink 1.1s steps(2) infinite; }
+.rs-anim-glow   { animation: rs-glow 1.6s ease-in-out infinite; }
+.rs-anim-pop    { transform-origin: top right; animation: rs-pop .25s ease-out; }
+.rs-anim-caret  { display: inline-block; width: 10px; background: var(--rs-running);
+                  margin-left: 2px; animation: rs-caret 1s steps(1) infinite; }
+.rs-bubble      { position: absolute; border-radius: 50%; background: var(--rs-fault);
+                  filter: blur(7px); transform: translate(-50%,-50%); z-index: 6;
+                  animation: rs-bubble 1.6s ease-in-out infinite; }
+.rs-node--fault { animation: rs-faultborder 1.3s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-anim-live, .rs-anim-glow, .rs-anim-pop, .rs-anim-caret,
+  .rs-bubble, .rs-node--fault { animation: none; }
+}
+
+/* =====================================================================
+   7. PLOT STYLING (Plotly.js)  — apply via JS, see colormap.js
+   ---------------------------------------------------------------------
+   layout:
+     paper_bgcolor / plot_bgcolor : var(--rs-plot-bg)  #0e0606
+     font.family                  : 'VT323'  font.color #9c7350
+     xaxis/yaxis.gridcolor        : #26333a   (thin)
+     zerolinecolor                : #6b5224
+     xaxis.title 'E / V'  yaxis.title 'i / µA'
+   traces:
+     line.width 2–2.6 (highlighted) ; non-highlighted: opacity 0.20, width 1.4
+     peak markers : open lime circle (#b6e36b), label above/below
+     2-point Δ    : two filled lime dots + dashed lime connector  → ΔE, Δi box
+     cursor       : cyan (#5de0ff) dashed crosshair + filled dot + E/i readout
+   interaction rules:
+     - multiple traces may be "lit" at once; the rest get opacity var(--rs-dim)
+     - cursor snap + 2-point Δ act ONLY on lit traces
+     - pinch / scroll zoom enabled (dragmode:'zoom'); stacks with lit/dim
+   ===================================================================== */
+
+.rs-trace-dim { opacity: var(--rs-dim); }   /* helper if drawing in SVG/HTML */
